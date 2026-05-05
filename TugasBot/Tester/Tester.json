@@ -1,0 +1,9 @@
+{
+	"name": "Tester",
+	"version": "1.0",
+	"authors": ["AI"],
+	"description": "Only for testing purposes.",
+	"countryCodes": ["id"],
+	"platform": ".Net 10.0",
+	"programmingLang": "C#"
+}
