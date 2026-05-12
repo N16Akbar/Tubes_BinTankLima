@@ -1,88 +1,193 @@
+/* TODO: 
+1. Perbaiki agar firePower lebih dinamis dan akurat berdasarkan jarak musuh dan energi bot saat ini 
+2. Tank harus mengelilingi musuh atau zigzag (tidak terlalu besar) saat mengarah ke musuh
+*/
+// Library yang dibutuhkan untuk Robocode
 using System;
 using System.Drawing;
 using Robocode.TankRoyale.BotApi;
 using Robocode.TankRoyale.BotApi.Events;
 
-/*
-TODO: coba buat kalkulasi agar pelurunya dapat memprediksi arah musuh agar tepat sasaran
-*/
-
 public class Orion : Bot
 {
-    // Memulai bot
+    // Variable untuk menyimpan sudut enemy yang di-scan berdasarkan posisi bot saat ini
+    double directionToEnemy;
+    // Variable untuk menyimpan jarak enemy yang di-scan berdasarkan posisi bot saat ini
+    double distanceToEnemy;
+    // Variable untuk menyimpan riwayat terbaru enemy yang di-scan
+    double recentEnemyX, recentEnemyY;
+    // Variabel untuk menandakan apakah sudah memiliki riwayat musuh atau belum
+    bool hasEnemyHistory = false;
+
+    /*
+        double lastAccurateFactor = -1;
+
+        double sumShots = 0;
+        double sumHits = 0;
+        double sumMiss = 0;
+    */
+
+    // Memulai objek bot pada main program
     static void Main(string[] args)
     {
         new Orion().Start();
     }
 
-    // Memuat data tentang bot
+    // Memuat info bot dari Orion.json
     Orion() : base(BotInfo.FromFile("Orion.json")) { }
 
-    // Override fungsi Run() ketika bot berjalan
     public override void Run()
     {
-        // Memisahkan pergerakan agar tidak saling memengaruhi saat bodi berputar
+        // Membuat radar independen dari gun saat berputar
         AdjustRadarForGunTurn = true;
+        // Membuat gun independen dari body saat berputar
         AdjustGunForBodyTurn = true;
 
-        // Warna Bot
-        BodyColor = Color.Gold;
-        TurretColor = Color.Black;
-        RadarColor = Color.White;
-        BulletColor = Color.Yellow;
+        // Warna tank
+        // BodyColor = Color.Gold;
+        // TurretColor = Color.Black;
+        // RadarColor = Color.DarkRed;
+        // BulletColor = Color.Red;
+        // GunColor = Color.Goldenrod;
+        BodyColor = Color.MidnightBlue;
+        TurretColor = Color.Gold;
+        RadarColor = Color.DarkRed;
+        BulletColor = Color.OrangeRed;
         GunColor = Color.Goldenrod;
 
-        // Selama bot berjalan
         while (IsRunning)
         {
-            // Putar radar secara menyeluruh dalam 1 tick game.
-            TurnRadarLeft(360);
+            // Melakukan scanning radar sebesar 90 derajat per tick
+            TurnRadarLeft(90);
         }
     }
 
     public override void OnScannedBot(ScannedBotEvent evt)
     {
-        // Kalkulasi berapa jarak antara bot ke arah musuh yang discan
-        double directionToEnemy = DirectionTo(evt.X, evt.Y);
+        // Memasukkan nilai direction dari musuh yang ter-scan
+        directionToEnemy = DirectionTo(evt.X, evt.Y);
+        // Memasukkan nilai distance dari musuh yang ter-scan
+        distanceToEnemy = DistanceTo(evt.X, evt.Y);
 
-        // Kalkulasi berapa derajat diberikan untuk memutar radar ke arah musuh yang discan
-        double radarTurn = CalcDeltaAngle(directionToEnemy, RadarDirection);
-        SetTurnRadarLeft(radarTurn);
+        // Jika belum ada history enemy
+        if (!hasEnemyHistory)
+        {
+            // Isi  nilai ke riwayat terbaru dan menandakan bahwa history sudah tersedia
+            recentEnemyX = evt.X;
+            recentEnemyY = evt.Y;
+            hasEnemyHistory = true;
+        }
 
-        // Kalkulasi berapa derajat diberikan untuk memutar gun ke arah musuh yang discan
-        double gunTurn = CalcDeltaAngle(directionToEnemy, GunDirection);
+        // Memutar radar berdasarkan selisih sudut enemy dan sudut radar saat ini
+        SetTurnRadarLeft(CalcDeltaAngle(directionToEnemy, RadarDirection));
+        // Memutar body berdasarkan selisih sudut enemy dan sudut body saat ini
+        SetTurnLeft(CalcDeltaAngle(directionToEnemy, Direction));
+
+        // Selalu mendekat ke musuh dengan menyisakan jarak 50 unit pixel
+        if (distanceToEnemy > 50)
+            SetForward(distanceToEnemy - 50);
+
+        // Menyesuaikan besar power secara dinamis berdasarkan jarak musuh antara 1 dan 3
+        double firePower = (distanceToEnemy <= 100) ? 3.0 : 1.0;
+
+        // Menghitung kecepatan peluru yang ditembakkan
+        double bulletSpeed = CalcBulletSpeed(firePower);
+
+        // Menghitung waktu yang dibutuhkan peluru untuk mencapai musuh
+        double calcTravelTime = distanceToEnemy / bulletSpeed;
+
+        // Mencari delta antara bot yang ter-scan dan riwayat terbaru bot musuh sebelumnya
+        double deltaX = evt.X - recentEnemyX;
+        double deltaY = evt.Y - recentEnemyY;
+
+        // Akurasi (offset) prediksi pergerakan musuh
+        double accurateFactor = 1.85;
+        if (distanceToEnemy <= 100)
+            accurateFactor = 0.5;
+        else if (distanceToEnemy <= 250)
+            accurateFactor = 1.0;
+        else if (distanceToEnemy <= 500)
+            accurateFactor = 1.45;
+
+        /*
+        if (accurateFactor != lastAccurateFactor)
+        {
+            Console.WriteLine($"[ANALISIS] Jarak: {Math.Round(distanceToEnemy, 1)} | Accurate Factor berubah ke: {accurateFactor}");
+            lastAccurateFactor = accurateFactor;
+        }
+        */
+
+        // Menghitung prediksi posisi musuh berikutnya dengan menambahkan posisi bot yang ter-scan dan hasil perhitungan perkiraan
+        double predictedX = evt.X + (deltaX * calcTravelTime * accurateFactor);
+        double predictedY = evt.Y + (deltaY * calcTravelTime * accurateFactor);
+
+        // Selalu memperbarui riwayat terbaru dengan bot yang ter-scan
+        recentEnemyX = evt.X;
+        recentEnemyY = evt.Y;
+
+        // Menghitung derajat yang diperlukan untuk memutar gun ke arah prediksi lokasi musuh
+        double predictedAim = DirectionTo(predictedX, predictedY);
+        double gunTurn = CalcDeltaAngle(predictedAim, GunDirection);
         SetTurnGunLeft(gunTurn);
 
-        // Kalkulasi berapa derajat diberikan untuk memutar body ke arah musuh yang discan
-        double bodyTurn = CalcDeltaAngle(directionToEnemy, Direction);
-        SetTurnLeft(bodyTurn);
+        // Toleransi seberapa besar miss aim ke musuh
+        double tolerance = (distanceToEnemy <= 100) ? 5 : 10;
 
-        // Hitung jarak ke musuh
-        double distanceToEnemy = DistanceTo(evt.X, evt.Y);
-        Console.WriteLine("Jarak ke bot musuh saat ini: " + distanceToEnemy);
-
-        // Terus bergerak maju mendekati musuh
-        if (distanceToEnemy > 100)
+        // Selama gun tidak panas dan masih sesuai nilai toleransi, lakukan penembakan
+        if (Math.Abs(gunTurn) < tolerance && GunHeat == 0)
         {
-            SetForward(distanceToEnemy - 100);
-        }
-
-        // Menembak jika dalam rentang toleransi direction < 10
-        if (Math.Abs(gunTurn) < 10)
-        {
-            // Tembakan dinamis: makin dekat musuh, makin besar daya (maks 3.0)
-            double firePower = Math.Min(400 / distanceToEnemy, 3.0);
-            double bulletSpeed = CalcBulletSpeed(firePower);
-            Console.WriteLine("Kecepatan peluru saat ini: " + bulletSpeed);
             SetFire(firePower);
+            // sumShots++;
         }
 
-        // Eksekusi semua perintah pergerakan dan tembakan di atas secara serentak
+        // Mengeksekusi seluruh instruksi Set*()
         Go();
     }
 
-    // public override void OnBotDeath(BotDeathEvent botDeathEvent)
-    // {
-    //     SetFireAssist
-    // }
+
+    public override void OnConnected(ConnectedEvent connectedEvent)
+    {
+        // Menandakan bahwa bot berhasil masuk ke server
+        Console.WriteLine("Bot Utama BinTank Lima berhasil masuk.");
+    }
+    public override void OnRoundStarted(RoundStartedEvent roundStatedEvent)
+    {
+        // Memastikan nilai dari ronde sebelumnya direset pada setiap ronde
+        recentEnemyX = recentEnemyY = 0;
+        hasEnemyHistory = false;
+    }
+
+    /*
+    public override void OnHitByBullet(HitByBulletEvent bulletHitBotEvent) { }
+
+    public override void OnBulletHit(BulletHitBotEvent bulletHitBotEvent)
+    {
+        sumHits++;
+    }
+
+    public override void OnBulletHitWall(BulletHitWallEvent bulletHitWallEvent)
+    {
+        Console.WriteLine($"[MISS] Menabrak Tembok! (Jarak target: {Math.Round(distanceToEnemy, 1)} | Factor: {lastAccurateFactor})");
+        sumMiss++;
+    }
+
+    public override void OnBulletHitBullet(BulletHitBulletEvent bulletHitBulletEvent)
+    {
+        Console.WriteLine($"[MISS] Tabrakan di udara! (Jarak target: {Math.Round(distanceToEnemy, 1)} | Factor: {lastAccurateFactor})");
+        sumMiss++;
+    }
+
+    public override void OnRoundEnded(RoundEndedEvent roundEndedEvent)
+    {
+        double accuracy = sumShots &gt; 0 ? (sumHits / sumShots) * 100 : 0;
+        double sumBulletHitBullet = sumShots - sumHits - sumMiss; 
+
+        Console.WriteLine($"Results");
+        Console.WriteLine($"Shots            : {sumShots}");
+        Console.WriteLine($"Hit              : {sumHits}");
+        Console.WriteLine($"Miss             : {sumMiss}");
+        Console.WriteLine($"BulletHitBullet  : {sumBulletHitBullet}");
+        Console.WriteLine($"Percentage       : {Math.Round(accuracy, 2)}%");
+    }
+    */
 }
