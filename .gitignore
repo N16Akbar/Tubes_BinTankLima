@@ -3,6 +3,8 @@ apis/
 src/TemplateBot
 src/sample-bots-csharp-0.30.0/
 robocode-tankroyale-gui-0.30.0.jar
+*.properties
+*.cs.*
 
 # Ignore temporarily
 src/alternative-bot/alt-bot-1/
