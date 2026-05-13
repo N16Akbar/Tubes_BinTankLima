@@ -5,7 +5,7 @@
 ## Pemanfaatan Algoritma Greedy dalam Pembuatan Bot Permainan Robocode Tank Royale
 
 <!-- ![Robocode Banner](https://robocode.dev/images/robocode-logo.svg) -->
-![Status](https://img.shields.io/badge/status-in--progress-red)
+![Status](https://img.shields.io/badge/Status-In%20progress-yellow)
 ![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white)
 
 </div>
@@ -14,8 +14,11 @@
 
 | Status | Nama Bot | Lokasi Folder | Versi | Versi Tag | Algoritma Greedy |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Bot Utama** | **Orion** | `src/main-bot/Orion` | v1.1 | - | - *Predictive aiming*, memperkirakan seberapa besar perputaran *gun* berdasarkan kalkulasi prediksi pergerakan musuh selanjutnya.<br>- *Dynamic fire size*, mengoptimalkan *damage* yang diberikan dari *bullet* secara dinamis berdasarkan jarak ke musuh.<br>- *Hitrate offset correction*, meminimalisir *miss hitrate bullet* ke bot musuh yang sedang bergerak. |
+| **Bot Utama** | **Orion** | `src/main-bot/Orion` | v1.1 | - | - |
 | ... | ... | ... | ... | ... | ... |
+
+<!-- *Predictive aiming*, memperkirakan seberapa besar perputaran *gun* berdasarkan kalkulasi prediksi pergerakan musuh selanjutnya.<br>- *Dynamic fire size*, mengoptimalkan *damage* yang diberikan dari *bullet* secara dinamis berdasarkan jarak ke musuh.<br>- *Hitrate offset correction*, meminimalisir *miss hitrate bullet* ke bot musuh yang sedang bergerak.-
+--->
 
 ## Requirement
 
