@@ -1,7 +1,9 @@
 /* TODO: 
-1. Perbaiki agar firePower lebih dinamis dan akurat berdasarkan jarak musuh dan energi bot saat ini 
-2. Tank harus mengelilingi musuh atau zigzag (tidak terlalu besar) saat mengarah ke musuh
+DONE 1. Perbaiki agar firePower lebih dinamis dan akurat berdasarkan jarak musuh dan energi bot saat ini 
+???? 2. Tank harus mengelilingi musuh atau zigzag (tidak terlalu besar) saat mengarah ke musuh
+TODO 3. Menyesuaikan kondisi tank untuk menabrak secara dinamis berdasarkan energy bot dengan energy musuh
 */
+
 // Library yang dibutuhkan untuk Robocode
 using System;
 using System.Drawing;
@@ -10,12 +12,15 @@ using Robocode.TankRoyale.BotApi.Events;
 
 public class Orion : Bot
 {
-    // Variable untuk menyimpan sudut enemy yang di-scan berdasarkan posisi bot saat ini
+    // Variabel untuk menyimpan sudut enemy yang di-scan berdasarkan posisi bot saat ini
     double directionToEnemy;
-    // Variable untuk menyimpan jarak enemy yang di-scan berdasarkan posisi bot saat ini
+
+    // Variabel untuk menyimpan jarak enemy yang di-scan berdasarkan posisi bot saat ini
     double distanceToEnemy;
-    // Variable untuk menyimpan riwayat terbaru enemy yang di-scan
+
+    // Variabel untuk menyimpan riwayat terbaru enemy yang di-scan
     double recentEnemyX, recentEnemyY;
+
     // Variabel untuk menandakan apakah sudah memiliki riwayat musuh atau belum
     bool hasEnemyHistory = false;
 
@@ -38,6 +43,9 @@ public class Orion : Bot
 
     public override void Run()
     {
+        // Console.WriteLine("Lakukan Run()");
+        // Console.WriteLine("Bot enemy terscan");
+
         // Membuat radar independen dari gun saat berputar
         AdjustRadarForGunTurn = true;
         // Membuat gun independen dari body saat berputar
@@ -57,24 +65,26 @@ public class Orion : Bot
 
         while (IsRunning)
         {
-            // Melakukan scanning radar sebesar 90 derajat per tick
-            TurnRadarLeft(90);
+            // Melakukan scanning radar sebesar 45 derajat per tick (miliseconds) selama event lain tidak terjadi / selesai
+            TurnRadarLeft(45);
         }
     }
 
-    public override void OnScannedBot(ScannedBotEvent evt)
+    // Subprogram algoritma menyerang musuh
+    public void ExecuteEnemy(double targetX, double targetY, double targetEnergy)
     {
+
         // Memasukkan nilai direction dari musuh yang ter-scan
-        directionToEnemy = DirectionTo(evt.X, evt.Y);
+        directionToEnemy = DirectionTo(targetX, targetY);
         // Memasukkan nilai distance dari musuh yang ter-scan
-        distanceToEnemy = DistanceTo(evt.X, evt.Y);
+        distanceToEnemy = DistanceTo(targetX, targetY);
 
         // Jika belum ada history enemy
         if (!hasEnemyHistory)
         {
-            // Isi  nilai ke riwayat terbaru dan menandakan bahwa history sudah tersedia
-            recentEnemyX = evt.X;
-            recentEnemyY = evt.Y;
+            // Isi nilai ke riwayat terbaru dan menandakan bahwa history sudah tersedia
+            recentEnemyX = targetX;
+            recentEnemyY = targetY;
             hasEnemyHistory = true;
         }
 
@@ -84,12 +94,21 @@ public class Orion : Bot
         SetTurnLeft(CalcDeltaAngle(directionToEnemy, Direction));
 
         // Selalu mendekat ke musuh dengan menyisakan jarak 50 unit pixel
-        if (distanceToEnemy > 50)
-            SetForward(distanceToEnemy - 50);
+        // if (distanceToEnemy > 50)
+        // {
+        // SetForward(distanceToEnemy - 50);
+        SetForward(distanceToEnemy);
+        // }
+        // else
+        //     SetBack(50);
 
-        // Menyesuaikan besar power secara dinamis berdasarkan jarak musuh antara 1 dan 3
-        double firePower = (distanceToEnemy <= 100) ? 3.0 : 1.0;
+        // Menyesuaikan besar power secara dinamis berdasarkan jarak dan energy musuh
+        double distanceRatio = ArenaWidth / distanceToEnemy;
+        double energyRatio = Energy / targetEnergy;
+        double firePower = Math.Max(0.1, Math.Min(3.0, distanceRatio * energyRatio));
 
+
+        // Predictive shooting. Logika ini berdasarkan testing lebih akurat jika bot musuh tidak terlalu banyak bergerak
         // Menghitung kecepatan peluru yang ditembakkan
         double bulletSpeed = CalcBulletSpeed(firePower);
 
@@ -97,8 +116,8 @@ public class Orion : Bot
         double calcTravelTime = distanceToEnemy / bulletSpeed;
 
         // Mencari delta antara bot yang ter-scan dan riwayat terbaru bot musuh sebelumnya
-        double deltaX = evt.X - recentEnemyX;
-        double deltaY = evt.Y - recentEnemyY;
+        double deltaX = targetX - recentEnemyX;
+        double deltaY = targetY - recentEnemyY;
 
         // Akurasi (offset) prediksi pergerakan musuh
         double accurateFactor = 1.85;
@@ -118,12 +137,12 @@ public class Orion : Bot
         */
 
         // Menghitung prediksi posisi musuh berikutnya dengan menambahkan posisi bot yang ter-scan dan hasil perhitungan perkiraan
-        double predictedX = evt.X + (deltaX * calcTravelTime * accurateFactor);
-        double predictedY = evt.Y + (deltaY * calcTravelTime * accurateFactor);
+        double predictedX = targetX + (deltaX * calcTravelTime * accurateFactor);
+        double predictedY = targetY + (deltaY * calcTravelTime * accurateFactor);
 
         // Selalu memperbarui riwayat terbaru dengan bot yang ter-scan
-        recentEnemyX = evt.X;
-        recentEnemyY = evt.Y;
+        recentEnemyX = targetX;
+        recentEnemyY = targetY;
 
         // Menghitung derajat yang diperlukan untuk memutar gun ke arah prediksi lokasi musuh
         double predictedAim = DirectionTo(predictedX, predictedY);
@@ -140,10 +159,15 @@ public class Orion : Bot
             // sumShots++;
         }
 
+
         // Mengeksekusi seluruh instruksi Set*()
         Go();
     }
 
+    public override void OnScannedBot(ScannedBotEvent evt)
+    {
+        ExecuteEnemy(evt.X, evt.Y, evt.Energy);
+    }
 
     public override void OnConnected(ConnectedEvent connectedEvent)
     {
@@ -155,6 +179,20 @@ public class Orion : Bot
         // Memastikan nilai dari ronde sebelumnya direset pada setiap ronde
         recentEnemyX = recentEnemyY = 0;
         hasEnemyHistory = false;
+    }
+
+    public override void OnHitBot(HitBotEvent evt)
+    {
+        Console.WriteLine("Bot tertabrak");
+        // Stop();
+        // Console.WriteLine("Bot tertabrak (Stop())");
+        // Rescan();
+        // Console.WriteLine("Bot tertabrak (Rescan())");
+        // while (evt.X != recentEnemyX && evt.Y != recentEnemyY)
+        // {
+        ExecuteEnemy(evt.X, evt.Y, evt.Energy);
+        Console.WriteLine("Bot tertabrak (ExecuteEnemy())");
+        // }
     }
 
     /*
