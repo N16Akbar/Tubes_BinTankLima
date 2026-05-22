@@ -4,21 +4,19 @@
 
 ## Pemanfaatan Algoritma Greedy dalam Pembuatan Bot Permainan Robocode Tank Royale
 
-<!-- ![Robocode Banner](https://robocode.dev/images/robocode-logo.svg) -->
-![Status](https://img.shields.io/badge/Status-In%20progress-yellow)
+<!-- ![Status](https://img.shields.io/badge/Status-In%20progress-yellow) -->
 ![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet&logoColor=fff)
 
 </div>
 
 ## Penjelasan Bot
 
-| Status | Nama Bot | Lokasi Folder | Versi | Versi Tag | Algoritma Greedy |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Bot Utama** | **Orion** | `src/main-bot/Orion` | v1.1 | - | - |
-| ... | ... | ... | ... | ... | ... |
-
-<!-- *Predictive aiming*, memperkirakan seberapa besar perputaran *gun* berdasarkan kalkulasi prediksi pergerakan musuh selanjutnya.<br>- *Dynamic fire size*, mengoptimalkan *damage* yang diberikan dari *bullet* secara dinamis berdasarkan jarak ke musuh.<br>- *Hitrate offset correction*, meminimalisir *miss hitrate bullet* ke bot musuh yang sedang bergerak.-
---->
+| Kategori | Nama Bot | Lokasi Folder | Versi | Algoritma Greedy |
+| :--- | :--- | :--- | :--- | :--- |
+| **Bot Utama** | **Orion** | `src/main-bot/Orion` | v1.3 | *Dynamic firepower*, *predictive aiming*, *orbit movement*, *wall escape*, *stuck recovery* |
+| **Bot Alternatif 2** | **AllMight** | `src/alternative-bots/alt-bot-2/AllMight` | v1.0 | *Target locking*, *adaptive movement*, *ramming decision*, *predictive aiming* |
+| ... | ... | ... | ... | ... |
 
 ## Requirement
 
@@ -40,7 +38,7 @@
     java -jar .\robocode-tankroyale-gui-0.30.0.jar
     ```
 
-4. Buka menu **Config > Bot Root Directories** pada GUI Robocode (`Ctrl + D`). Tambahkan direktori bot dengan klik tombol **Add**, lalu *select* pada folder `src/main-bot`. Pastikan path yang dipilih berhenti di `main-bot` dan **JANGAN** masuk sampai ke folder `Orion` agar bot dapat terbaca oleh sistem.
+4. Buka menu **Config > Bot Root Directories** pada GUI Robocode (`Ctrl + D`). Tambahkan direktori bot dengan klik tombol **Add**, lalu *select* folder `src/main-bot` untuk bot utama atau `src/alternative-bots` untuk bot alternatif. Pastikan path yang dipilih berhenti di folder kategori bot, misalnya `main-bot` atau `alternative-bots`, dan **JANGAN** masuk sampai ke folder nama bot seperti `Orion` atau `AllMight` agar bot dapat terbaca oleh aplikasinya.
 5. Konfigurasi *battle* dengan membuka menu **Battle > Start Battle** (`Ctrl + B`).
 6. Pada panel **Bot Directories (local only)**, pilih bot yang ingin dimainkan lalu klik tombol **Boot ->**. Bot akan berpindah ke panel **Booted Bots (local only)**.
 7. Tunggu beberapa saat hingga bot selesai di-*compile* dan muncul di panel **Joined Bots (local/remote)**.

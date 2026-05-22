@@ -1,0 +1,16 @@
+{
+	"name": "AllMight",
+	"version": "1.0",
+	"authors": [
+		"Mifthahul R. Akbar",
+		"Imam Faris Rasyid",
+		"Bimo Auliano"
+	],
+	"description": "Tank Alternatif BinTank Lima",
+	"homepage": "https://github.com/N16Akbar/n16akbar.github.io",
+	"countryCodes": [
+		"id"
+	],
+	"platform": ".Net 10.0",
+	"programmingLang": "C#"
+}
