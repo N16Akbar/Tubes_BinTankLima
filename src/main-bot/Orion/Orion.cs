@@ -28,10 +28,16 @@ public class Orion : Bot
 
     public override void Run()
     {
+        // Membuat pergerakan radar terpisah dari pergerakan gun
         AdjustRadarForGunTurn = true;
+
+        // Membuat pergerakan gun terpisah dari pergerakan body
         AdjustGunForBodyTurn = true;
+
+        // Membuat pergerakan radar terpisah dari pergerakan body
         AdjustRadarForBodyTurn = true;
 
+        // Warna setiap bagian dari tank
         RadarColor = Color.FromArgb(35, 35, 40);        
         GunColor = Color.FromArgb(180, 185, 190);       
         BulletColor = Color.FromArgb(80, 140, 255);     
@@ -39,38 +45,53 @@ public class Orion : Bot
         TracksColor = Color.FromArgb(25, 25, 30);       
         BodyColor = Color.FromArgb(38, 75, 150);        
 
+        // Selama tank berjalan,
         while (IsRunning)
         {
+            // lakukan pemutaran radar sebesar 45 derajat dalam satu tick (ms)
             TurnRadarLeft(45);
         }
     }
 
+    // Override bot tank saat menemukan musuh (disimpan dalam variabel evt)
     public override void OnScannedBot(ScannedBotEvent evt)
     {
+        // Variabel menyimpan derajat yang dibutuhkan dari derajat bot saat ini ke derajat musuh
         enemyDirection = DirectionTo(evt.X, evt.Y);
+
+        // Variabel menyimpan jarak yang dibutuhkan dari jarak bot saat ini ke jarak musuh
         enemyDistance = DistanceTo(evt.X, evt.Y);
 
+        // Mengecek jika bot mengalami stuck
         CheckStuck();
 
+        // Melakukan subprogram lock radar ke musuh
         LockRadar();
+
+        // Variabel yang menyimpan seberapa besar peluru yang ditembak berdasarkan hasil subprogram ChooseFirePower()
         double firePower = ChooseFirePower(evt);
+
+        // Variabel yang menyimpan seberapa besar derajat yang dibutuhkan untuk mengarahkan gun saat ini ke arah musuh
         double gunTurn = AimGun(evt, firePower);
 
+        // Melakukan pergerakan zig-zag dan orbit sesuai kondisi yang ada pada subprogram
         MoveGreedy(evt);
 
+        // Jika arah gun sudah di dalam batas toleransi,
         if (CanShoot(gunTurn))
         {
+            // lakukan penembakan dengan besar peluru firePower
             SetFire(firePower);
         }
+
+        // Eksekusi semua Set*() yang didefinisikan
         Go();
     }
 
-    private void LockRadar()
-    {
-        SetTurnRadarLeft(CalcDeltaAngle(enemyDirection, RadarDirection));
-    }
+    // Subprogram melakukan penguncian radar ke arah musuh berdasarkan perhitungan delta derajat saat ini ke derajat musuh
+    public void LockRadar() => SetTurnRadarLeft(CalcDeltaAngle(enemyDirection, RadarDirection));
 
-    private double ChooseFirePower(ScannedBotEvent evt)
+    public double ChooseFirePower(ScannedBotEvent evt)
     {
         double power;
 
