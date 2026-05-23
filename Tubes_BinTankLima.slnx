@@ -4,6 +4,9 @@
   <Folder Name="/src/alternative-bots/alt-bot-2/">
     <Project Path="src/alternative-bots/alt-bot-2/AllMight/AllMight.csproj" />
   </Folder>
+  <Folder Name="/src/alternative-bots/alt-bot-3/">
+    <Project Path="src/alternative-bots/alt-bot-3/Aegis/Aegis.csproj" />
+  </Folder>
   <Folder Name="/src/main-bot/">
     <Project Path="src/main-bot/Orion/Orion.csproj" />
   </Folder>

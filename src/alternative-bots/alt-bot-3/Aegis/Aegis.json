@@ -1,0 +1,14 @@
+{
+  "name": "Aegis",
+  "version": "1.0",
+  "authors": [
+    "Bimo Auliano"
+  ],
+  "description": "Tank Alternatif 3 BinTank Lima",
+  "homepage": "https://github.com/N16Akbar/n16akbar.github.io",
+  "countryCodes": [
+    "id"
+  ],
+  "platform": ".Net 10.0",
+  "programmingLang": "C#"
+}
