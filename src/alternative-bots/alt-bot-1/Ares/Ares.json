@@ -1,0 +1,14 @@
+{
+	"name": "Ares",
+	"version": "1.0",
+	"authors": [
+		"Mifthahul R. Akbar"
+	],
+	"description": "Tank Alternatif 2 BinTank Lima",
+	"homepage": "https://github.com/N16Akbar/n16akbar.github.io",
+	"countryCodes": [
+		"id"
+	],
+	"platform": ".Net 10.0",
+	"programmingLang": "C#"
+}
