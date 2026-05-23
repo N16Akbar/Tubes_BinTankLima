@@ -2,11 +2,9 @@
 	"name": "AllMight",
 	"version": "1.0",
 	"authors": [
-		"Mifthahul R. Akbar",
-		"Imam Faris Rasyid",
-		"Bimo Auliano"
+		"Imam Faris Rasyid"
 	],
-	"description": "Tank Alternatif BinTank Lima",
+	"description": "Tank Alternatif 2 BinTank Lima",
 	"homepage": "https://github.com/N16Akbar/n16akbar.github.io",
 	"countryCodes": [
 		"id"
