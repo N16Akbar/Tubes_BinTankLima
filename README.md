@@ -11,11 +11,11 @@
 
 ## Penjelasan Singkat Algoritma Greedy
 
-**Orion** adalah bot utama yang menggunakan strategi greedy seimbang. Bot memilih besar peluru berdasarkan jarak dan energi, mengarahkan tembakan dengan prediksi sederhana, lalu memilih gerakan berdasarkan kondisi saat ini. Jika jarak ke bot musuh jauh, bot akan mendekat. Jika jarak ke bot musuh sedang, bot akan mengelilingi musuh. Jika terlalu dekat dengan bot musuh atau dekat dengan dinding, bot akan menjaga jarak atau bergerak ke tengah arena.
+**Orion** adalah bot utama yang menggunakan strategi greedy berdasarkan aturan yang ditentukan. Bot memilih besar peluru berdasarkan jarak dan energi, mengarahkan tembakan dengan prediksi sederhana, lalu memilih gerakan berdasarkan kondisi saat ini. Jika jarak ke bot musuh jauh, bot akan mendekat. Jika jarak ke bot musuh sedang, bot akan mengelilingi musuh. Jika terlalu dekat dengan bot musuh atau dekat dengan dinding, bot akan menjaga jarak atau bergerak ke tengah arena.
 
-**Ares** adalah bot alternatif agresif yang berfokus pada ramming. Bot selalu mengarahkan body ke musuh, maju hingga menabrak, dan menembak ketika posisi gun sudah cukup akurat. Besar peluru tetap dipilih berdasarkan jarak dan energi agar tidak boros energi.
+**Ares** adalah bot alternatif agresif yang berfokus pada *ramming* bot musuh. Bot selalu menuju ke musuh, maju hingga menabrak, dan menembak ketika posisi gun sudah cukup akurat. Besar peluru tetap dipilih berdasarkan jarak dan energi agar tidak boros energi.
 
-**AllMight** adalah bot alternatif berbasis target locking. Bot memilih satu bot musuh utama, mengunci radar ke bot musuh tersebut, lalu menyesuaikan pergerakan dan tembakan berdasarkan jarak, energi, jumlah musuh, dan kondisi bot musuh. Saat jumlah musuh berkurang, bot ini menjadi lebih agresif.
+**AllMight** adalah bot alternatif berbasis *target locking*. Bot memilih satu bot musuh utama, mengunci radar ke bot musuh tersebut, lalu menyesuaikan pergerakan dan tembakan berdasarkan jarak, energi, jumlah musuh, dan kondisi bot musuh. Saat jumlah musuh berkurang, bot ini menjadi lebih agresif.
 
 **Aegis** adalah bot alternatif defensif yang berfokus pada bertahan hidup. Bot menghindari dinding, menjaga jarak dari musuh, dan bergerak agar lebih sulit ditembak. Aegis hanya menembak saat kondisi cukup aman sehingga prioritas utamanya adalah menjadi bot terakhir yang bertahan di dalam arena.
 
@@ -30,7 +30,7 @@
 
 ## Requirement
 
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) (saat ini menggunakan SDK 10.0.203)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) (saat ini menggunakan SDK 10.0.300)
 - [Robocode Tank Royale GUI v0.30.0](https://github.com/Ariel-HS/tubes1-if2211-starter-pack/blob/main/robocode-tankroyale-gui-0.30.0.jar)
 
 ## Instalasi dan Cara Build
@@ -54,6 +54,12 @@
 7. Tunggu beberapa saat hingga bot selesai di-*compile* dan muncul di panel **Joined Bots (local/remote)**.
 8. Pilih bot yang sudah di dalam panel **Joined Bots (local/remote)**, lalu klik tombol **Add ->** atau **Add All ->** untuk memindahkannya ke dalam daftar **Selected Bots (battle participants)**.
 9. Klik tombol **Start Battle** di bagian bawah untuk memulai permainan.
+
+## Kendala Development
+
+- Memahami cara kerja API Robocode Tank Royale agar perilaku bot sesuai dengan strategi greedy yang dirancang. Beberapa pengaturan seperti pemisahan pergerakan radar, gun, dan body melalui `AdjustRadarForGunTurn`, `AdjustGunForBodyTurn`, dan `AdjustRadarForBodyTurn` tidak langsung diketahui tanpa membaca dokumentasi API secara menyeluruh.
+- Memahami perbedaan penggunaan perintah `Set*()` yang diakhiri dengan `Go()` dibandingkan dengan perintah langsung seperti `TurnRadarLeft()` atau `Forward()`. Perbedaan ini ternyata sangat memengaruhi perilaku bot dalam satu *tick* permainan.
+- Dokumentasi API cukup teknis dan tidak memaparkan secara simpel terkait fungsi, properti, atau variabel apa saja yang dapat digunakan untuk perhitungan strategi bot.
 
 ## Author
 
