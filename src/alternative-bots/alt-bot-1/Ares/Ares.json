@@ -2,9 +2,11 @@
 	"name": "Ares",
 	"version": "1.0",
 	"authors": [
-		"Mifthahul R. Akbar"
+		"Mifthahul R. Akbar",
+		"Imam Faris Rasyid",
+		"Bimo Auliano"
 	],
-	"description": "Tank Alternatif 2 BinTank Lima",
+	"description": "Tank Alternatif 1 BinTank Lima",
 	"homepage": "https://github.com/N16Akbar/n16akbar.github.io",
 	"countryCodes": [
 		"id"
