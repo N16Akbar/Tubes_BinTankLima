@@ -4,19 +4,29 @@
 
 ## Pemanfaatan Algoritma Greedy dalam Pembuatan Bot Permainan Robocode Tank Royale
 
-<!-- ![Status](https://img.shields.io/badge/Status-In%20progress-yellow) -->
 ![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet&logoColor=fff)
 
 </div>
 
-## Penjelasan Bot
+## Penjelasan Singkat Algoritma Greedy
 
-| Kategori | Nama Bot | Lokasi Folder | Versi | Algoritma Greedy |
-| :--- | :--- | :--- | :--- | :--- |
-| **Bot Utama** | **Orion** | `src/main-bot/Orion` | v1.3 | *Dynamic firepower*, *predictive aiming*, *orbit movement*, *wall escape*, *stuck recovery* |
-| **Bot Alternatif 2** | **AllMight** | `src/alternative-bots/alt-bot-2/AllMight` | v1.0 | *Target locking*, *adaptive movement*, *ramming decision*, *predictive aiming* |
-| ... | ... | ... | ... | ... |
+**Orion** adalah bot utama yang menggunakan strategi greedy seimbang. Bot memilih besar peluru berdasarkan jarak dan energi, mengarahkan tembakan dengan prediksi sederhana, lalu memilih gerakan berdasarkan kondisi saat ini. Jika jarak ke bot musuh jauh, bot akan mendekat. Jika jarak ke bot musuh sedang, bot akan mengelilingi musuh. Jika terlalu dekat dengan bot musuh atau dekat dengan dinding, bot akan menjaga jarak atau bergerak ke tengah arena.
+
+**Ares** adalah bot alternatif agresif yang berfokus pada ramming. Bot selalu mengarahkan body ke musuh, maju hingga menabrak, dan menembak ketika posisi gun sudah cukup akurat. Besar peluru tetap dipilih berdasarkan jarak dan energi agar tidak boros energi.
+
+**AllMight** adalah bot alternatif berbasis target locking. Bot memilih satu bot musuh utama, mengunci radar ke bot musuh tersebut, lalu menyesuaikan pergerakan dan tembakan berdasarkan jarak, energi, jumlah musuh, dan kondisi bot musuh. Saat jumlah musuh berkurang, bot ini menjadi lebih agresif.
+
+**Aegis** adalah bot alternatif defensif yang berfokus pada bertahan hidup. Bot menghindari dinding, menjaga jarak dari musuh, dan bergerak agar lebih sulit ditembak. Aegis hanya menembak saat kondisi cukup aman sehingga prioritas utamanya adalah menjadi bot terakhir yang bertahan di dalam arena.
+
+## Informasi Bot
+
+| Kategori | Nama Bot | Lokasi Folder | Versi |
+| :--- | :--- | :--- | :--- |
+| **Utama** | **Orion** | `src/main-bot/Orion` | v1.3 |
+| **Alternatif 1** | **Ares** | `src/alternative-bots/alt-bot-1/Ares` | v1.0 |
+| **Alternatif 2** | **AllMight** | `src/alternative-bots/alt-bot-2/AllMight` | v1.0 |
+| **Alternatif 3** | **Aegis** | `src/alternative-bots/alt-bot-3/Aegis` | v1.0 |
 
 ## Requirement
 
