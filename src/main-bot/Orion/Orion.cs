@@ -3,7 +3,8 @@ using System.Drawing;
 using Robocode.TankRoyale.BotApi;
 using Robocode.TankRoyale.BotApi.Events;
 
-public class Orion: Bot {
+public class Orion : Bot
+{
 
     // Menyimpan arah orbit bot, 1 untuk satu arah dan -1 untuk arah sebaliknya
     int orbitDirection = 1;
@@ -14,13 +15,15 @@ public class Orion: Bot {
     bool hasprevPosition = false;
     int stuckTurns = 0;
 
-    static void Main(string[] args) {
+    static void Main(string[] args)
+    {
         new Orion().Start();
     }
 
-    Orion(): base(BotInfo.FromFile("Orion.json")) {}
+    Orion() : base(BotInfo.FromFile("Orion.json")) { }
 
-    public override void Run() {
+    public override void Run()
+    {
         // Membuat pergerakan radar terpisah dari pergerakan gun
         AdjustRadarForGunTurn = true;
 
@@ -31,22 +34,24 @@ public class Orion: Bot {
         AdjustRadarForBodyTurn = true;
 
         // Warna setiap bagian dari tank
-        RadarColor = Color.FromArgb(35, 35, 40);
-        GunColor = Color.FromArgb(180, 185, 190);
-        BulletColor = Color.FromArgb(80, 140, 255);
-        ScanColor = Color.FromArgb(120, 190, 255);
-        TracksColor = Color.FromArgb(25, 25, 30);
-        BodyColor = Color.FromArgb(38, 75, 150);
+        TracksColor = Color.Black;
+        BodyColor = Color.Blue;
+        RadarColor = Color.DarkSlateGray;
+        GunColor = Color.LightGray;
+        BulletColor = Color.DodgerBlue;
+        ScanColor = Color.LightSkyBlue;
 
         // Selama tank berjalan,
-        while (IsRunning) {
+        while (IsRunning)
+        {
             // lakukan pemutaran radar sebesar 45 derajat dalam satu tick (ms)
             TurnRadarLeft(45);
         }
     }
 
     // Override bot tank saat menemukan musuh (disimpan dalam variabel evt)
-    public override void OnScannedBot(ScannedBotEvent evt) {
+    public override void OnScannedBot(ScannedBotEvent evt)
+    {
         // Variabel menyimpan derajat dan jarak ke bot musuh yang discan
         double enemyDirection = DirectionTo(evt.X, evt.Y);
         double enemyDistance = DistanceTo(evt.X, evt.Y);
@@ -55,11 +60,14 @@ public class Orion: Bot {
         bool isStuck = false;
 
         // Menyimpan posisi awal bot untuk menjadi pembanding pada scan berikutnya
-        if (!hasprevPosition) {
+        if (!hasprevPosition)
+        {
             prevX = X;
             prevY = Y;
             hasprevPosition = true;
-        } else {
+        }
+        else
+        {
             // Menghitung seberapa jauh bot berpindah dari posisi sebelumnya
             double moveX = X - prevX;
             double moveY = Y - prevY;
@@ -74,7 +82,8 @@ public class Orion: Bot {
             prevY = Y;
 
             // Jika stuck terjadi beberapa kali berturut-turut, bot membalik arah orbit dan bergerak ke tengah arena
-            if (stuckTurns >= 3) {
+            if (stuckTurns >= 3)
+            {
                 orbitDirection *= -1;
                 isStuck = true;
                 stuckTurns = 0;
@@ -153,34 +162,40 @@ public class Orion: Bot {
         SetTurnGunLeft(gunTurn);
 
         // Jika bot stuck, bot bergerak ke tengah arena
-        if (isStuck) {
+        if (isStuck)
+        {
             SetTurnLeft(CalcDeltaAngle(DirectionTo(ArenaWidth / 2, ArenaHeight / 2), Direction));
             SetForward(180);
         }
         // Jika bot berada di area 10% terluar arena, bot bergerak ke tengah arena
-        else if (X < ArenaWidth / 10 || X > ArenaWidth - ArenaWidth / 10 || Y < ArenaHeight / 10 || Y > ArenaHeight - ArenaHeight / 10) {
+        else if (X < ArenaWidth / 10 || X > ArenaWidth - ArenaWidth / 10 || Y < ArenaHeight / 10 || Y > ArenaHeight - ArenaHeight / 10)
+        {
             orbitDirection *= -1;
 
             SetTurnLeft(CalcDeltaAngle(DirectionTo(ArenaWidth / 2, ArenaHeight / 2), Direction));
             SetForward(180);
         }
         // Jika energi bot unggul dan musuh lemah, bot menekan musuh secara langsung
-        else if (Energy > evt.Energy + 25 && Energy > 40 && evt.Energy < 30 && enemyDistance < 180) {
+        else if (Energy > evt.Energy + 25 && Energy > 40 && evt.Energy < 30 && enemyDistance < 180)
+        {
             SetTurnLeft(BearingTo(evt.X, evt.Y));
             SetForward(enemyDistance);
         }
         // Jika bot musuh jauh, mendekat ke musuh sambil melakukan sedikit orbit
-        else if (enemyDistance > 250) {
+        else if (enemyDistance > 250)
+        {
             SetTurnLeft(CalcDeltaAngle(enemyDirection + orbitDirection * 45, Direction));
             SetForward(180);
         }
         // Jika jarak ke bot musuh cukup sedang, lakukan mengelilingi musuh
-        else if (enemyDistance > 120) {
+        else if (enemyDistance > 120)
+        {
             SetTurnLeft(CalcDeltaAngle(enemyDirection + orbitDirection * 90, Direction));
             SetForward(120);
         }
         // Jika terlalu dekat, mundur untuk menjaga jarak
-        else {
+        else
+        {
             SetTurnLeft(CalcDeltaAngle(enemyDirection + 180, Direction));
             SetForward(120);
         }
@@ -196,7 +211,8 @@ public class Orion: Bot {
             aimTolerance = 2;
 
         // Tembak jika gun sudah cukup mengarah dan tidak panas.
-        if (Math.Abs(gunTurn) < aimTolerance && GunHeat == 0) {
+        if (Math.Abs(gunTurn) < aimTolerance && GunHeat == 0)
+        {
             SetFire(firePower);
         }
 
@@ -204,13 +220,15 @@ public class Orion: Bot {
         Go();
     }
 
-    public override void OnHitBot(HitBotEvent evt) {
+    public override void OnHitBot(HitBotEvent evt)
+    {
         // Menyimpan arah dan jarak ke bot musuh yang tertabrak
         double hitDirection = DirectionTo(evt.X, evt.Y);
         double hitDistance = DistanceTo(evt.X, evt.Y);
 
         // Jika energi bot unggul dan jaraknya dekat, lakukan ramming sambil menembak
-        if (Energy > evt.Energy + 20 && hitDistance < 120) {
+        if (Energy > evt.Energy + 20 && hitDistance < 120)
+        {
             SetTurnLeft(BearingTo(evt.X, evt.Y));
             SetForward(hitDistance);
 
@@ -219,7 +237,9 @@ public class Orion: Bot {
 
             if (Math.Abs(gunTurn) < 10 && GunHeat == 0)
                 SetFire(1.5);
-        } else {
+        }
+        else
+        {
             // Jika tidak, bot akan menjauh
             orbitDirection *= -1;
 
@@ -231,7 +251,8 @@ public class Orion: Bot {
         Go();
     }
 
-    public override void OnHitWall(HitWallEvent evt) {
+    public override void OnHitWall(HitWallEvent evt)
+    {
         // Saat bot menabrak dinding, bot bergerak kembali ke tengah arena
         orbitDirection *= -1;
 
@@ -241,7 +262,8 @@ public class Orion: Bot {
         Go();
     }
 
-    public override void OnHitByBullet(HitByBulletEvent evt) {
+    public override void OnHitByBullet(HitByBulletEvent evt)
+    {
         // Saat bot terkena peluru, bot membalik arah orbit
         orbitDirection *= -1;
 
@@ -252,7 +274,8 @@ public class Orion: Bot {
         Go();
     }
 
-    public override void OnSkippedTurn(SkippedTurnEvent evt) {
+    public override void OnSkippedTurn(SkippedTurnEvent evt)
+    {
         // Jika bot melewatkan giliran, bot bergerak agar tidak diam terlalu lama
         orbitDirection *= -1;
 
@@ -262,7 +285,8 @@ public class Orion: Bot {
         Go();
     }
 
-    public override void OnRoundStarted(RoundStartedEvent evt) {
+    public override void OnRoundStarted(RoundStartedEvent evt)
+    {
         // Reset seluruh variabel agar ronde baru tidak memakai data sebelumnya
         orbitDirection = 1;
 
@@ -272,7 +296,8 @@ public class Orion: Bot {
         stuckTurns = 0;
     }
 
-    public override void OnConnected(ConnectedEvent evt) {
+    public override void OnConnected(ConnectedEvent evt)
+    {
         // Penanda bot berhasil masuk
         Console.WriteLine("Bot Orion berhasil masuk.");
     }

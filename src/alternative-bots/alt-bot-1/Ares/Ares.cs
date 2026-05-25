@@ -3,15 +3,18 @@ using System.Drawing;
 using Robocode.TankRoyale.BotApi;
 using Robocode.TankRoyale.BotApi.Events;
 
-public class Ares : Bot {
+public class Ares : Bot
+{
 
-    static void Main(string[] args) {
+    static void Main(string[] args)
+    {
         new Ares().Start();
     }
 
-    Ares(): base(BotInfo.FromFile("Ares.json")) {}
+    Ares() : base(BotInfo.FromFile("Ares.json")) { }
 
-    public override void Run() {
+    public override void Run()
+    {
         // Membuat pergerakan radar terpisah dari pergerakan gun
         AdjustRadarForGunTurn = true;
 
@@ -22,7 +25,7 @@ public class Ares : Bot {
         AdjustRadarForBodyTurn = true;
 
         // Warna setiap bagian dari tank
-        BodyColor = Color.FromArgb(160, 30, 30);
+        BodyColor = Color.DarkRed;
         GunColor = Color.Black;
         RadarColor = Color.Red;
         BulletColor = Color.Orange;
@@ -30,14 +33,16 @@ public class Ares : Bot {
         TracksColor = Color.DarkRed;
 
         // Selama tank berjalan,
-        while (IsRunning) {
+        while (IsRunning)
+        {
             // lakukan pemutaran radar untuk mencari musuh
             TurnRadarLeft(45);
         }
     }
 
     // Override bot tank saat menemukan musuh
-    public override void OnScannedBot(ScannedBotEvent evt) {
+    public override void OnScannedBot(ScannedBotEvent evt)
+    {
         // Menyimpan jarak ke bot musuh yang terdeteksi
         double enemyDistance = DistanceTo(evt.X, evt.Y);
 
@@ -80,7 +85,8 @@ public class Ares : Bot {
             firePower = 0.7;
 
         // Tembak jika gun sudah cukup mengarah ke musuh dan gun tidak panas
-        if (Math.Abs(gunTurn) < 10 && GunHeat == 0) {
+        if (Math.Abs(gunTurn) < 10 && GunHeat == 0)
+        {
             SetFire(firePower);
         }
 
@@ -88,7 +94,8 @@ public class Ares : Bot {
         Go();
     }
 
-    public override void OnHitBot(HitBotEvent evt) {
+    public override void OnHitBot(HitBotEvent evt)
+    {
         // Saat menabrak bot musuh, arahkan kembali body ke bot tersebut
         SetTurnLeft(BearingTo(evt.X, evt.Y));
 
@@ -102,7 +109,8 @@ public class Ares : Bot {
         SetTurnGunLeft(gunTurn);
 
         // Tembak saat posisi musuh sangat dekat dan gun sudah cukup mengarah
-        if (Math.Abs(gunTurn) < 10 && GunHeat == 0) {
+        if (Math.Abs(gunTurn) < 10 && GunHeat == 0)
+        {
             SetFire(2.0);
         }
 
@@ -110,7 +118,8 @@ public class Ares : Bot {
         Go();
     }
 
-    public override void OnHitWall(HitWallEvent evt) {
+    public override void OnHitWall(HitWallEvent evt)
+    {
         // Jika menabrak dinding, bot diarahkan kembali ke tengah arena
         // agar tidak terus tersangkut di tepi arena
         SetTurnLeft(CalcDeltaAngle(DirectionTo(ArenaWidth / 2, ArenaHeight / 2), Direction));
@@ -122,7 +131,8 @@ public class Ares : Bot {
         Go();
     }
 
-    public override void OnHitByBullet(HitByBulletEvent evt) {
+    public override void OnHitByBullet(HitByBulletEvent evt)
+    {
         // Saat terkena peluru, bot tetap bergerak agar tidak diam dan mudah ditembak lagi
         SetForward(120);
 
@@ -130,7 +140,8 @@ public class Ares : Bot {
         Go();
     }
 
-    public override void OnSkippedTurn(SkippedTurnEvent evt) {
+    public override void OnSkippedTurn(SkippedTurnEvent evt)
+    {
         // Jika turn terlewat, bot tetap maju agar strategi agresif terus berjalan
         SetForward(120);
 
